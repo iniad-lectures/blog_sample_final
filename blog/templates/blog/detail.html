@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Detail page</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="INIAD">
+    <link href="{% static 'blog/css/default.css' %}" rel="stylesheet">
+  </head>
+  <body>
+    <div id="header">
+      <img src="{% static 'blog/img/iniad.png' %}" alt="Logo">
+    </div>
+    <h1>Django Sample Application</h1>
+    <h2>Title: {{ article.title }}</h2>
+    <small>Posted at:{{ article.posted_at }}</small>
+    <div>
+      {{ article.body | linebreaksbr }}
+    </div>
+    
+    <h2>Comments</h2>
+    <form action="{% url 'detail' article.id %}" method="post">
+      {% csrf_token %}
+      <div>
+        <label for="textInput">Text</label><br>
+        <textarea id="textInput" name="text" rows="3"></textarea>
+      </div>
+      <div>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+
+    {% if comments %}
+    {% for comment in comments %}
+    <div class="text">
+      <small>[{{ comment.posted_at }}]</small>
+      <div>
+        {{ comment.text | linebreaksbr }}
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No comment.</p>
+    {% endif %}
+
+    <hr>
+    <p>
+  	  <a href="{% url 'index' %}">Top</a> | 
+      <a href="{% url 'update' article.id %}">Edit</a> | 
+      <a href="{% url 'delete' article.id %}">Delete</a>  
+	  </p>
+  </body>
+</html>

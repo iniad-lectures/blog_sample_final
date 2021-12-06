@@ -1,0 +1,42 @@
+body {
+    font-family: sans-serif;
+}
+
+h1 {
+    border-bottom: solid 1px #17194c;
+}
+
+#header {
+    background-color: #17194c;
+    padding: 10px 20px 10px 20px;
+    height: 40px;
+}
+
+#header img {
+    height: 100%;
+}
+
+#titleInput {
+    margin: 10px;
+    padding: 10px;
+    border: solid 2px#666666;
+    width: 40%;
+}
+
+#textInput {
+    margin: 10px;
+    padding: 10px;
+    border: solid 2px#666666;
+    width: 80%;
+}
+
+.text {
+    margin: 10px;
+    padding: 10px;
+    background-color: #eeeeff;
+}
+
+h2 {
+    padding: 0px 10px 0px 10px;
+    border-left: solid 4px #17194c;
+}

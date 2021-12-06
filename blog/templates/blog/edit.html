@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>    
+    <title>Edit page</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="INIAD">
+    <link href="{% static 'blog/css/default.css' %}" rel="stylesheet">
+  </head>
+  <body>
+    <div id="header">
+      <img src="{% static 'blog/img/iniad.png' %}" alt="Logo">
+    </div>
+    <h1 >Edit article</h1>
+    <form action="{% url 'update' article.id %}" method="post">
+      {% csrf_token %}
+      <div>
+        <label for="titleInput">Title</label><br>
+        <input id="titleInput" name="title" type="text"
+          placeholder="Input title" value="{{ article.title }}">
+      </div>
+      <div>
+        <label for="textInput">Text</label><br>
+        <textarea id="textInput" name="text" rows="3">{{ article.body }}</textarea>
+      </div>
+      <div>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  </body>
+</html>
