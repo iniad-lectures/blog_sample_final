@@ -1,0 +1,60 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+      - production
+
+env:
+  PROJECT_ID: gcp-project-name
+  GKE_CLUSTER: my-cluster-name
+  GKE_ZONE: asia-northeast1-b
+  DEPLOYMENT_NAME: blog
+  IMAGE: blog
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Setting up gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ env.PROJECT_ID }}
+
+    # Set up credential helper for ECR
+    - run: |-
+        gcloud --quiet auth configure-docker
+
+    # Get GKE crendentials
+    - uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+        credentials: ${{ secrets.GKE_SA_KEY }}
+
+    # Build docker image
+    - name: Build
+      run: |-
+        docker build \
+          --tag "asia.gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" \
+          .
+
+    # Push docker image to GCR
+    - name: Publish
+      run: |-
+        docker push "asia.gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
+
+    # Modify GKE deployment to deploy
+    - name: Deploy
+      run: |-
+        kubectl get deployment $DEPLOYMENT_NAME -o yaml > d1.yaml
+        kubectl set image -f d1.yaml blog-app="asia.gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" --local -o yaml > d2.yaml
+        kubectl apply -f d2.yaml
