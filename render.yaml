@@ -1,0 +1,27 @@
+databases:
+  - name: blog-sample-db
+    plan: free
+    databaseName: blog_sample
+    user: blog_sample
+
+services:
+  - type: web
+    name: blog-sample-web
+    env: python
+    plan: free
+    branch: production
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.8.2
+      - key: DATABASE_URL
+        fromDatabase:
+          name: blog-sample-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.production
+      - key: WEB_CONCURRENCY
+        value: 4
